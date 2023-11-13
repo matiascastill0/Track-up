@@ -1,5 +1,3 @@
-Basándome en el código que me has proporcionado para tu archivo `app.py` y tu `App.js`, aquí tienes una guía de instalación en español que puedes incluir en tu `README.md`:
-
 ```markdown
 # Guía de Instalación para Track-up
 
