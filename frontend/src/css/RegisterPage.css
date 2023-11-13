@@ -1,0 +1,85 @@
+/* Establecer el fondo y la fuente para la página */
+.container {
+    background-color: #f7f8fa;
+    font-family: 'Open Sans', sans-serif;
+    height: 100vh; /* Asegurarse de que ocupe toda la altura de la ventana */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Diseño de la tarjeta de registro con sombra y bordes redondeados */
+.form-control {
+    border-radius: 5px; /* Bordes redondeados para los campos de entrada */
+    border: 1px solid #ddd; /* Borde sutil */
+    padding: 1rem; /* Espaciado interior */
+    margin-bottom: 1rem; /* Margen inferior */
+}
+
+/* Estilo para la etiqueta de los campos de formulario */
+.form-label {
+    margin-left: 0.5rem;
+    margin-top: -0.75rem;
+    font-size: 0.9rem;
+    color: #333;
+    background: #f7f8fa;
+    display: inline-block;
+    padding: 0 0.5rem;
+}
+
+/* Estilo para botón de registro */
+.btn-primary {
+    background-color: #1877f2; /* Color azul característico de Facebook */
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3; /* Un azul más oscuro al pasar el ratón */
+}
+
+/* Ajustes para la imagen */
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Estilo para mensajes de éxito */
+.alert-success {
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+}
+
+/* Estilos para los enlaces */
+.link-danger {
+    color: #dc3545;
+}
+
+.link-danger:hover {
+    color: #bd2130;
+}
+
+.form-check-label {
+    margin-left: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Espaciado para el título de registro y el botón */
+.lead {
+    font-size: 2rem;
+    font-weight: 300;
+    margin-bottom: 1rem;
+}
+
+/* Espaciado entre elementos y bordes de los formularios */
+.form-outline {
+    margin-bottom: 15px;
+}

@@ -1,0 +1,75 @@
+/* Establece una paleta de colores y tipografía uniforme para toda la página */
+body, html {
+    font-family: 'Open Sans', sans-serif;
+    color: #333;
+    background-color: #f7f8fa;
+    margin: 0;
+    padding: 0;
+}
+
+/* Estilos generales para la barra de navegación */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1rem 2rem;
+}
+
+/* Centra el logotipo en dispositivos más grandes */
+.navbar-brand {
+    margin-right: auto; /* Centra el logo cuando los elementos de la navegación están colapsados */
+    font-weight: 700;
+    color: #007bff;
+    font-size: 1.5em; /* Aumenta el tamaño del logo ligeramente */
+}
+
+.navbar-brand:hover {
+    color: #0056b3;
+}
+
+/* Estilos para los enlaces de la barra de navegación */
+.nav-link {
+    color: #555;
+    margin: 0 1rem; /* Aumenta el espacio entre enlaces */
+    font-size: 1.1em; /* Hace que el texto sea un poco más grande para facilitar la lectura */
+    transition: color 0.3s;
+}
+
+.nav-link:hover {
+    color: #007bff;
+}
+
+/* Alinea los elementos de la navegación a la derecha en dispositivos más grandes */
+.navbar-nav {
+    display: flex;
+    align-items: center;
+}
+
+/* Elimina el subrayado de los enlaces */
+a {
+    text-decoration: none;
+}
+
+/* Media queries para ajustar la navegación en dispositivos más pequeños */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        padding: 1rem;
+    }
+  
+    .navbar-brand {
+        margin: 0 0 1rem 0; /* Remueve el margen automático en móviles */
+    }
+  
+    .navbar-nav {
+        flex-direction: column;
+        width: 100%;
+    }
+  
+    .nav-link {
+        text-align: center; /* Centra los enlaces en móviles */
+        padding: 0.5rem 0; /* Añade un poco de padding vertical para espacio */
+    }
+}
