@@ -10,7 +10,7 @@ from uuid import uuid4
 app = Flask(__name__)
  
 app.config['SECRET_KEY'] = 'matias123'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:BaAg3C3G42ghH2H2a63dbEfEH-a5BcgA@roundhouse.proxy.rlwy.net:17515/railway'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://vseviln:Vasena0400@vseviln.mysql.pythonanywhere-services.com/default'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
   
