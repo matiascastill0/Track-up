@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from 'axios';
 import {useNavigate} from "react-router-dom";
 import '../css/RegisterPage.css';
+import { BACK_URL } from "../route";
 export default function RegisterPage(){
  
     const [email,setEmail] = useState('');
@@ -11,7 +12,8 @@ export default function RegisterPage(){
     const navigate = useNavigate();
      
     const registerUser = () => {
-        axios.post('http://127.0.0.1:5000/signup', {
+      // link del backend en back_url
+        axios.post(`${BACK_URL}/signup`, {
             email: email,
             password: password
         })

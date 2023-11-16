@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from 'axios';
 import {useNavigate} from "react-router-dom";
 import '../css/LoginPage.css';
+import { BACK_URL } from "../route";
  
 export default function LoginPage(){
  
@@ -19,7 +20,8 @@ export default function LoginPage(){
           alert("password has left Blank!");
         }
         else{
-            axios.post('http://127.0.0.1:5000/login', {
+          // link del backend en back_url
+            axios.post(`${BACK_URL}/login`, {
                 email: email,
                 password: password
             })
