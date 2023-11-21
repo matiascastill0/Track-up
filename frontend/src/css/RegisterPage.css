@@ -2,7 +2,6 @@
 .container {
     background-color: #f7f8fa;
     font-family: 'Open Sans', sans-serif;
-    height: 100vh; /* Asegurarse de que ocupe toda la altura de la ventana */
     display: flex;
     justify-content: center;
     align-items: center;

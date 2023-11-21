@@ -32,7 +32,7 @@ body, html {
 /* Estilos para los enlaces de la barra de navegación */
 .nav-link {
     color: #555;
-    margin: 0 1rem; /* Aumenta el espacio entre enlaces */
+    margin: 0 2rem; /* Aumenta el espacio entre enlaces */
     font-size: 1.1em; /* Hace que el texto sea un poco más grande para facilitar la lectura */
     transition: color 0.3s;
 }

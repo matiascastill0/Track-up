@@ -23,6 +23,8 @@ class Song(db.Model):
     name = db.Column(db.String(100), nullable=False)
     about = db.Column(db.Text, nullable=True)
     user_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+    artist_id = db.Column(db.String(36), db.ForeignKey('artists.id'), nullable=True)  # Add this line
+
 
 class Playlist(db.Model):
     __tablename__ = "playlists"

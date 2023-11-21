@@ -4,22 +4,22 @@ from sqlalchemy.exc import SQLAlchemyError
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS, cross_origin
+from werkzeug.utils import secure_filename
+
 from models import db, User, Song, Playlist, Artist, File, playlist_song
 from uuid import uuid4
 import os
 
- 
 app = Flask(__name__)
- 
+
 app.config['SECRET_KEY'] = 'matias123'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://vseviln:Vasena0400@vseviln.mysql.pythonanywhere-services.com/vseviln$default'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
-app.config['UPLOAD_FOLDER'] = 'uploads'  
+app.config['UPLOAD_FOLDER'] = 'uploads'
 
-
-bcrypt = Bcrypt(app) 
-CORS(app, supports_credentials=True)
+bcrypt = Bcrypt(app)
+CORS(app, origins=["http://localhost:3000", "https://vseviln.pythonanywhere.com"], supports_credentials=True)
 db.init_app(app)
 migrate = Migrate(app, db)
 
@@ -27,63 +27,82 @@ def error_response(status_code, message):
     response = jsonify({'error': message})
     response.status_code = status_code
     return response
-  
+
 with app.app_context():
     db.create_all()
- 
+
 @app.route("/")
 def hello_world():
     return "Hello, World!"
- 
+
 @app.route("/signup", methods=["POST"])
 def signup():
     email = request.json["email"]
     password = request.json["password"]
- 
+
     user_exists = User.query.filter_by(email=email).first() is not None
- 
+
     if user_exists:
         return jsonify({"error": "Email already exists"}), 409
-     
+
     hashed_password = bcrypt.generate_password_hash(password)
     new_user = User(email=email, password=hashed_password)
     db.session.add(new_user)
     db.session.commit()
- 
+
     session["user_id"] = new_user.id
- 
+    session.modified = True  # Explicitly save the session
+
     return jsonify({
         "message": "User created successfully.",
         "login": "/login",
         "id": new_user.id,
         "email": new_user.email
     })
- 
+
 @app.route("/login", methods=["POST"])
 def login_user():
     email = request.json["email"]
     password = request.json["password"]
-  
+
     user = User.query.filter_by(email=email).first()
-  
+
     if user is None:
         return jsonify({"error": "Unauthorized Access"}), 401
-  
+
     if not bcrypt.check_password_hash(user.password, password):
         return jsonify({"error": "Unauthorized"}), 401
-      
+
     session["user_id"] = user.id
-  
+    session.modified = True  # Explicitly save the session
+
     return jsonify({
         "message": "User logged in successfully.",
         "id": user.id,
         "email": user.email
     })
+
+@app.route('/profile/<user_id>', methods=['GET'])
+def get_user_profile(user_id):
+    user = User.query.get(user_id)
+
+    if user:
+        user_data = {
+            'id': user.id,
+            'email': user.email,
+            'songs': [{'id': song.id, 'name': song.name} for song in user.songs],
+            'playlists': [{'id': playlist.id, 'name': playlist.name} for playlist in user.playlists]
+        }
+
+        return jsonify(user_data)
+    else:
+        return error_response(404, 'User not found')
+
     
 # Create a new song
 @app.route('/songs', methods=['POST'])
 def create_song():
-    data = request.json
+    data = request.form
     if not data or not 'name' in data or not 'user_id' in data:
         return error_response(400, 'Invalid data')
 
@@ -91,10 +110,22 @@ def create_song():
         new_song = Song(name=data['name'], about=data.get('about', ''), user_id=data['user_id'])
         db.session.add(new_song)
         db.session.commit()
+
+        # Save file information with the associated song
+        file = request.files['file']
+        if file:
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+            new_file = File(filename=filename, user_id=data['user_id'], song_id=new_song.id)
+            db.session.add(new_file)
+            db.session.commit()
+
         return jsonify(new_song.id), 201
     except SQLAlchemyError as e:
         db.session.rollback()
         return error_response(500, str(e))
+
 
 # Get a song by ID
 @app.route('/songs/<song_id>', methods=['GET'])
@@ -192,9 +223,11 @@ def remove_song_from_playlist(playlist_id, song_id):
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    user_id = session.get("user_id")
-    if not user_id:
-        return error_response(401, 'Unauthorized Access')
+    data = request.form
+    if not data or not 'name' in data or not 'user_id' in data:
+        return error_response(400, 'Invalid data')
+
+    user_id = data['user_id']
 
     file = request.files['file']
     if file:

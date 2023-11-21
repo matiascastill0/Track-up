@@ -12,27 +12,29 @@ export default function RegisterPage(){
     const navigate = useNavigate();
      
     const registerUser = () => {
-      // link del backend en back_url
-        axios.post(`${BACK_URL}/signup`, {
-            email: email,
-            password: password
-        })
-        .then(function (response) {
-             console.log(response);
-             setSuccessMessage("User registered successfully. Redirecting to login page..");
-             setTimeout(() => {
-            navigate("/login");
-            }, 2000);
-        })
-        .catch(function (error) {
-            console.log(error, 'error');
-            if (error.response.status && error.response.status === 401) {
-                alert("Invalid credentials");
-            } else {
-                alert("Something went wrong. Please try again later.");
-            }
-        });
-    };
+      axios.post(`${BACK_URL}/signup`, {
+          email: email,
+          password: password
+      }, {
+          withCredentials: true 
+      })
+      .then(function (response) {
+          console.log(response);
+          setSuccessMessage("User registered successfully. Redirecting to login page..");
+          setTimeout(() => {
+              navigate("/login");
+          }, 2000);
+      })
+      .catch(function (error) {
+          console.log(error, 'error');
+          if (error.response && error.response.status === 401) {
+              alert("Invalid credentials");
+          } else {
+              alert("Something went wrong. Please try again later.");
+          }
+      });
+  };
+  
     
   return (
     <div>
