@@ -33,6 +33,23 @@ class Playlist(db.Model):
     # Tabla asociativa para la relación muchos a muchos entre Playlist y Song
     songs = db.relationship('Song', secondary='playlist_song', lazy='subquery',
                             backref=db.backref('playlists', lazy=True))
+                            
+
+class Artist(db.Model):
+    __tablename__ = "artists"
+    id = db.Column(db.String(36), primary_key=True, unique=True, default=get_uuid)
+    name = db.Column(db.String(100), nullable=False)
+    # Relaciones
+    songs = db.relationship('Song', backref='artist', lazy=True)
+
+class File(db.Model):
+    __tablename__ = "files"
+    id = db.Column(db.String(36), primary_key=True, unique=True, default=get_uuid)
+    filename = db.Column(db.String(255), nullable=False)
+    # Relaciones
+    user_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+    song_id = db.Column(db.String(36), db.ForeignKey('songs.id'), nullable=True)
+    artist_id = db.Column(db.String(36), db.ForeignKey('artists.id'), nullable=True)
 
 playlist_song = db.Table('playlist_song',
     db.Column('playlist_id', db.String(36), db.ForeignKey('playlists.id'), primary_key=True),

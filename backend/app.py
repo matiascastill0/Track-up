@@ -1,11 +1,13 @@
-from flask import Flask, request, jsonify, session
-from flask_migrate import Migrate #pip install Flask-Migrate = https://pypi.org/project/Flask-Migrate/  
+from flask import Flask, request, jsonify, session, send_file
+from flask_migrate import Migrate
 from sqlalchemy.exc import SQLAlchemyError
-from flask_sqlalchemy import SQLAlchemy #pip install Flask-SQLAlchemy = https://pypi.org/project/Flask-SQLAlchemy/
-from flask_bcrypt import Bcrypt #pip install Flask-Bcrypt = https://pypi.org/project/Flask-Bcrypt/
-from flask_cors import CORS, cross_origin #ModuleNotFoundError: No module named 'flask_cors' = pip install Flask-Cors
-from models import db, User, Song, Playlist, playlist_song
+from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
+from flask_cors import CORS, cross_origin
+from models import db, User, Song, Playlist, Artist, File, playlist_song
 from uuid import uuid4
+import os
+
  
 app = Flask(__name__)
  
@@ -13,7 +15,9 @@ app.config['SECRET_KEY'] = 'matias123'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://vseviln:Vasena0400@vseviln.mysql.pythonanywhere-services.com/vseviln$default'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
-  
+app.config['UPLOAD_FOLDER'] = 'uploads'  
+
+
 bcrypt = Bcrypt(app) 
 CORS(app, supports_credentials=True)
 db.init_app(app)
@@ -185,6 +189,39 @@ def remove_song_from_playlist(playlist_id, song_id):
     else:
         return error_response(404, 'Playlist or song not found or not in the playlist')
 
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    user_id = session.get("user_id")
+    if not user_id:
+        return error_response(401, 'Unauthorized Access')
+
+    file = request.files['file']
+    if file:
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+        new_file = File(filename=filename, user_id=user_id)
+        db.session.add(new_file)
+        db.session.commit()
+
+        return jsonify({'message': 'File uploaded successfully'}), 201
+    else:
+        return error_response(400, 'No file provided')
+
+
+@app.route('/download/<file_id>', methods=['GET'])
+def download_file(file_id):
+    file = File.query.get(file_id)
+    if file:
+        return send_file(os.path.join(app.config['UPLOAD_FOLDER'], file.filename), as_attachment=True)
+    else:
+        return error_response(404, 'File not found')
+
  
 if __name__ == "__main__":
+    upload_folder = 'uploads'
+    if not os.path.exists(upload_folder):
+        os.makedirs(upload_folder)
+    app.config['UPLOAD_FOLDER'] = upload_folder
     app.run(debug=True)
