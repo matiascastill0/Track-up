@@ -1,5 +1,5 @@
 import React from 'react';
-import myImage from './images/vynil.jpg';
+import myImage from './images/vynil.png';
 
 const About = () => {
   // Define inline styles for the image
