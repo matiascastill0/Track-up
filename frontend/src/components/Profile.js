@@ -49,6 +49,40 @@ export default function Profile({ USER_ID }) {
     }
   };
   
+  const [editUserData, setEditUserData] = useState({
+    firstName: '',
+    lastName: '',
+  });
+
+  const handleEditUser = async () => {
+    try {
+      // Send a request to update the user with the edited data
+      await axios.put(
+        `${BACK_URL}/users/${USER_ID}`, // Adjust the endpoint accordingly
+        {
+          firstName: editUserData.firstName,
+          lastName: editUserData.lastName,
+        },
+        { withCredentials: true }
+      );
+  
+      // Update the user data after updating the user information
+      setUserData((prevUserData) => ({
+        ...prevUserData,
+        firstName: editUserData.firstName,
+        lastName: editUserData.lastName,
+      }));
+  
+      // Clear the edit user data
+      setEditUserData({
+        firstName: '',
+        lastName: '',
+      });
+    } catch (error) {
+      console.error('Error updating user information:', error);
+    }
+  };
+  
 
   const handlePlaySong = async (songId) => {
     try {
@@ -203,6 +237,23 @@ export default function Profile({ USER_ID }) {
             />
             <button onClick={handleCreateSong}>Create Song</button>
             <button onClick={handleUpload}>Upload Song</button>
+          </div>
+          // Inside your component's return statement
+          <div>
+             <h2>Edit User</h2>
+             <input
+               type="text"
+               placeholder="First Name"
+               value={editUserData.firstName}
+               onChange={(e) => setEditUserData({ ...editUserData, firstName: e.target.value })}
+             />
+             <input
+               type="text"
+               placeholder="Last Name"
+               value={editUserData.lastName}
+               onChange={(e) => setEditUserData({ ...editUserData, lastName: e.target.value })}
+             />
+            <button onClick={handleEditUser}>Update User</button>
           </div>
         </div>
       ) : (
