@@ -58,21 +58,17 @@ export default function Profile({ USER_ID }) {
     try {
       // Send a request to update the user with the edited data
       await axios.put(
-        `${BACK_URL}/users/${USER_ID}`, // Adjust the endpoint accordingly
+        `${BACK_URL}/users/${USER_ID}`,
         {
           firstName: editUserData.firstName,
           lastName: editUserData.lastName,
         },
         { withCredentials: true }
       );
-  
-      // Update the user data after updating the user information
-      setUserData((prevUserData) => ({
-        ...prevUserData,
-        firstName: editUserData.firstName,
-        lastName: editUserData.lastName,
-      }));
-  
+
+      // Fetch updated user data after editing the user profile
+      fetchUserData();
+
       // Clear the edit user data
       setEditUserData({
         firstName: '',
@@ -184,22 +180,42 @@ export default function Profile({ USER_ID }) {
     
   return (
     <div>
+      return (
+    <div>
       <div>
-             <h2>Edit User</h2>
-             <input
-               type="text"
-               placeholder="First Name"
-               value={editUserData.firstName}
-               onChange={(e) => setEditUserData({ ...editUserData, firstName: e.target.value })}
-             />
-             <input
-               type="text"
-               placeholder="Last Name"
-               value={editUserData.lastName}
-               onChange={(e) => setEditUserData({ ...editUserData, lastName: e.target.value })}
-             />
-            <button onClick={handleEditUser}>Update User</button>
-          </div>
+        <h2>Edit User</h2>
+        <input
+          type="text"
+          placeholder="First Name"
+          value={editUserData.firstName}
+          onChange={(e) => setEditUserData({ ...editUserData, firstName: e.target.value })}
+        />
+        <input
+          type="text"
+          placeholder="Last Name"
+          value={editUserData.lastName}
+          onChange={(e) => setEditUserData({ ...editUserData, lastName: e.target.value })}
+        />
+        <button onClick={handleEditUser}>Update User</button>
+      </div>
+      <h2>User Profile</h2>
+      {userData ? (
+        <div>
+          <p>Email: {userData.email}</p>
+          {/* Display edited user's name and last name */}
+          {editUserData.firstName && editUserData.lastName && (
+            <div>
+              <h3>Name:</h3>
+              <p>{`${editUserData.firstName} ${editUserData.lastName}`}</p>
+            </div>
+          )}
+          {/* ... (other profile information remains the same) */}
+        </div>
+      ) : (
+        <p>Loading user data...</p>
+      )}
+    </div>
+  );
       <h2>User Profile</h2>
       {userData ? (
         <div>
