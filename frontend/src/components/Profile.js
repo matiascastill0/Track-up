@@ -53,31 +53,6 @@ export default function Profile({ USER_ID }) {
     firstName: '',
     lastName: '',
   });
-
-  const handleEditUser = async () => {
-    try {
-      // Send a request to update the user with the edited data
-      await axios.put(
-        `${BACK_URL}/users/${USER_ID}`,
-        {
-          firstName: editUserData.firstName,
-          lastName: editUserData.lastName,
-        },
-        { withCredentials: true }
-      );
-
-      // Fetch updated user data after editing the user profile
-      fetchUserData();
-
-      // Clear the edit user data
-      setEditUserData({
-        firstName: '',
-        lastName: '',
-      });
-    } catch (error) {
-      console.error('Error updating user information:', error);
-    }
-  };
   
 
   const handlePlaySong = async (songId) => {
@@ -180,34 +155,60 @@ export default function Profile({ USER_ID }) {
     
   return (
     <div>
-      <div>
-        <h2>Edit User</h2>
-        <input
-          type="text"
-          placeholder="First Name"
-          value={editUserData.firstName}
-          onChange={(e) => setEditUserData({ ...editUserData, firstName: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Last Name"
-          value={editUserData.lastName}
-          onChange={(e) => setEditUserData({ ...editUserData, lastName: e.target.value })}
-        />
-        <button onClick={handleEditUser}>Update User</button>
-      </div>
       <h2>User Profile</h2>
       {userData ? (
         <div>
           <p>Email: {userData.email}</p>
-          {/* Display edited user's name and last name */}
-          {editUserData.firstName && editUserData.lastName && (
+          <h3>Songs:</h3>
+          <ul>
+            {userData.songs.map((song) => (
+              <li key={song.id}>
+                {song.name}
+                <button onClick={() => handlePlaySong(song.id)}>Play</button>
+                <button onClick={() => handleEditSong(song.id)}>Edit</button>
+              </li>
+            ))}
+          </ul>
+          {selectedSong && (
             <div>
-              <h3>Name:</h3>
-              <p>{`${editUserData.firstName} ${editUserData.lastName}`}</p>
+              <h3>Selected Song Details:</h3>
+              <p>ID: {selectedSong.song_id}</p>
+              <p>Name: {selectedSong.name}</p>
+              <p>About: {selectedSong.about}</p>
+              <audio controls src={audioFile} />
+              <h3>Edit Song:</h3>
+              <input
+                type="text"
+                placeholder="New Song Name"
+                value={editSongData.name}
+                onChange={(e) => setEditSongData({ ...editSongData, name: e.target.value })}
+              />
+              <input
+                type="text"
+                placeholder="New Song About"
+                value={editSongData.about}
+                onChange={(e) => setEditSongData({ ...editSongData, about: e.target.value })}
+              />
+              <button onClick={handleUpdateSong}>Update Song</button>
             </div>
           )}
-          {/* ... (other profile information remains the same) */}
+          <h3>Playlists:</h3>
+          <ul>
+            {userData.playlists.map((playlist) => (
+              <li key={playlist.id}>{playlist.name}</li>
+            ))}
+          </ul>
+          <div>
+            <h3>Create a New Song:</h3>
+            <input
+              type="text"
+              placeholder="Song name"
+              value={newSongName}
+              onChange={(e) => setNewSongName(e.target.value)}
+            />
+            <button onClick={handleCreateSong}>Create Song</button>
+            <button onClick={handleUpload}>Upload Song</button>
+          </div>
         </div>
       ) : (
         <p>Loading user data...</p>
