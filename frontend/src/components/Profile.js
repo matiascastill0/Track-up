@@ -184,6 +184,22 @@ export default function Profile({ USER_ID }) {
     
   return (
     <div>
+      <div>
+             <h2>Edit User</h2>
+             <input
+               type="text"
+               placeholder="First Name"
+               value={editUserData.firstName}
+               onChange={(e) => setEditUserData({ ...editUserData, firstName: e.target.value })}
+             />
+             <input
+               type="text"
+               placeholder="Last Name"
+               value={editUserData.lastName}
+               onChange={(e) => setEditUserData({ ...editUserData, lastName: e.target.value })}
+             />
+            <button onClick={handleEditUser}>Update User</button>
+          </div>
       <h2>User Profile</h2>
       {userData ? (
         <div>
@@ -237,23 +253,6 @@ export default function Profile({ USER_ID }) {
             />
             <button onClick={handleCreateSong}>Create Song</button>
             <button onClick={handleUpload}>Upload Song</button>
-          </div>
-          // Inside your component's return statement
-          <div>
-             <h2>Edit User</h2>
-             <input
-               type="text"
-               placeholder="First Name"
-               value={editUserData.firstName}
-               onChange={(e) => setEditUserData({ ...editUserData, firstName: e.target.value })}
-             />
-             <input
-               type="text"
-               placeholder="Last Name"
-               value={editUserData.lastName}
-               onChange={(e) => setEditUserData({ ...editUserData, lastName: e.target.value })}
-             />
-            <button onClick={handleEditUser}>Update User</button>
           </div>
         </div>
       ) : (
