@@ -124,6 +124,30 @@ export default function Profile({ USER_ID }) {
     }
   };
 
+  const handleUpload = async () => {
+    const file = document.getElementById('songFile').files[0];
+    if (!file) {
+      return;
+    }
+  
+    const formData = new FormData();
+    formData.append('file', file);
+  
+    try {
+      await axios.post(`${BACK_URL}/upload`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+  
+      // Handle successful upload
+      console.log('Song uploaded successfully');
+    } catch (error) {
+      console.error('Error uploading song:', error);
+    }
+  };
+
+    
   return (
     <div>
       <h2>User Profile</h2>
@@ -178,6 +202,7 @@ export default function Profile({ USER_ID }) {
               onChange={(e) => setNewSongName(e.target.value)}
             />
             <button onClick={handleCreateSong}>Create Song</button>
+            <button onClick={handleUpload}>Upload Song</button>
           </div>
         </div>
       ) : (

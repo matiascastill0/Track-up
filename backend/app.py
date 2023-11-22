@@ -19,7 +19,7 @@ app.config['SQLALCHEMY_ECHO'] = True
 app.config['UPLOAD_FOLDER'] = 'uploads'
 
 bcrypt = Bcrypt(app)
-CORS(app, origins=["http://localhost:3000", "https://vseviln.pythonanywhere.com"], supports_credentials=True)
+CORS(app, origins=["http://localhost:3000", "https://track-up-taupe.vercel.app"], supports_credentials=True)
 db.init_app(app)
 migrate = Migrate(app, db)
 
