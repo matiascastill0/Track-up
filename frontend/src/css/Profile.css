@@ -1,0 +1,20 @@
+/* Profile.css */
+.song-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .song-list li {
+    display: table-row;
+    margin-bottom: 8px; /* Adjust the margin as needed */
+  }
+  
+  .song-name,
+  .play-button {
+    display: table-cell;
+    padding: 4px; /* Adjust the padding as needed */
+  }
+  
+  .play-button {
+    margin-left: 8px; /* Add margin to the left of the play button */
+  }

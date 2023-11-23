@@ -14,6 +14,7 @@ app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'matias123'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://vseviln:Vasena0400@vseviln.mysql.pythonanywhere-services.com/vseviln$default'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///vseviln$default'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -111,15 +112,16 @@ def create_song():
         db.session.add(new_song)
         db.session.commit()
 
-        # Save file information with the associated song
-        file = request.files['file']
-        if file:
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        if 'file' in request.files and request.files['file']:
+            # Save file information with the associated song
+            file = request.files['file']
+            if file:
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-            new_file = File(filename=filename, user_id=data['user_id'], song_id=new_song.id)
-            db.session.add(new_file)
-            db.session.commit()
+                new_file = File(filename=filename, user_id=data['user_id'], song_id=new_song.id)
+                db.session.add(new_file)
+                db.session.commit()
 
         return jsonify(new_song.id), 201
     except SQLAlchemyError as e:
@@ -177,6 +179,21 @@ def create_playlist():
     except SQLAlchemyError as e:
         db.session.rollback()
         return error_response(500, str(e))
+
+# Delete a playlist by ID
+@app.route('/playlists/<playlist_id>', methods=['DELETE'])
+def delete_playlist(playlist_id):
+    playlist = Playlist.query.get(playlist_id)
+    if playlist:
+        try:
+            db.session.delete(playlist)
+            db.session.commit()
+            return jsonify('Playlist deleted successfully'), 200
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            return error_response(500, str(e))
+    else:
+        return error_response(404, 'Playlist not found')
 
 # Get a playlist by ID
 @app.route('/playlists/<playlist_id>', methods=['GET'])
