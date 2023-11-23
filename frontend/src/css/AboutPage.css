@@ -1,0 +1,39 @@
+.about-container {
+    font-family: Arial, sans-serif;
+  }
+  
+  .hero-section {
+    text-align: center;
+    padding: 50px;
+    background-color: #f8f8f8;
+  }
+  
+  .mission-statement,
+  .features-section,
+  .team-section,
+  .contact-section {
+    padding: 30px;
+  }
+  
+  .team-members {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .team-member {
+    text-align: center;
+  }
+  
+  .team-member img {
+    width: 150px; /* Ajusta al tamaño deseado */
+    border-radius: 50%; /* Para hacer la imagen circular */
+  }
+  
+  .about-footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #333;
+    color: white;
+  }
+  

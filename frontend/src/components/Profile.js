@@ -14,6 +14,9 @@ export default function Profile({ USER_ID }) {
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const [songToAdd, setSongToAdd] = useState('');
 
+  // Nuevo estado para almacenar la URL del audio
+  const [audioUrl, setAudioUrl] = useState(null);
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -26,7 +29,6 @@ export default function Profile({ USER_ID }) {
 
     fetchUserData();
   }, [USER_ID]);
-
 
   const handleCreateSong = async () => {
     try {
@@ -43,6 +45,7 @@ export default function Profile({ USER_ID }) {
 
       setNewSongName('');
       setAudioFile(null);
+      setAudioUrl(null); // Limpiar URL del audio
     } catch (error) {
       console.error('Error creating song:', error);
     }
@@ -63,23 +66,27 @@ export default function Profile({ USER_ID }) {
   };
 
   const handleFileChange = (e) => {
-    setAudioFile(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file) {
+      setAudioFile(file);
+      const audioUrl = URL.createObjectURL(file);
+      setAudioUrl(audioUrl); // Establecer la URL del archivo de audio
+    }
   };
 
   const handleDeleteSong = async (songId) => {
     try {
       // Send a request to delete the song
       await axios.delete(`${BACK_URL}/songs/${songId}`, { withCredentials: true });
+      // Update the user data after deleting the song
+      const updatedSongs = userData.songs.filter((song) => song.id !== songId);
+      setUserData((prevUserData) => ({
+        ...prevUserData,
+        songs: updatedSongs,
+      }));
     } catch (error) {
       console.error('Error deleting song:', error);
     }
-
-    // Update the user data after deleting the song
-    const updatedSongs = userData.songs.filter((song) => song.id !== songId);
-    setUserData((prevUserData) => ({
-      ...prevUserData,
-      songs: updatedSongs,
-    }));
   };
 
   const handleCreatePlaylist = async () => {
@@ -110,7 +117,6 @@ export default function Profile({ USER_ID }) {
   });
 
   const handleUpdateSong = async (song_id) => {
-    console.log(song_id);
     try {
       // Send a request to update the song with the edited data
       await axios.put(
@@ -149,21 +155,21 @@ export default function Profile({ USER_ID }) {
       console.error('Error updating song:', error);
     }
   };
-  
+
   const handleViewPlaylist = async (playlistId) => {
     try {
       const response = await axios.get(`${BACK_URL}/playlists/${playlistId}`);
       const playlistData = response.data;
-  
+
       // Fetch complete song data for each song ID in the playlist
       const songsDataPromises = playlistData.songs.map(async (songId) => {
         const songResponse = await axios.get(`${BACK_URL}/songs/${songId}`);
         return songResponse.data;
       });
-  
+
       // Wait for all promises to resolve
       const songsData = await Promise.all(songsDataPromises);
-  
+
       // Set the selected playlist and its songs
       setSelectedPlaylist({
         id: playlistData.playlist_id,
@@ -175,8 +181,7 @@ export default function Profile({ USER_ID }) {
       console.error('Error fetching playlist data:', error);
     }
   };
-  
-  
+
   const handleAddSongToPlaylist = async (playlistId) => {
     try {
       const songIdToAdd = songToAdd; // Use the selected song ID
@@ -187,16 +192,13 @@ export default function Profile({ USER_ID }) {
       );
 
       // Refresh the playlist data
-
       handleViewPlaylist(playlistId);
     } catch (error) {
       console.error('Error adding song to playlist:', error);
     }
   };
 
-  
   const handleRemoveSongFromPlaylist = async (playlistId, songId) => {
-    console.log(playlistId, songId);
     try {
       // Send a request to remove the selected song from the playlist
       await axios.delete(
@@ -210,7 +212,7 @@ export default function Profile({ USER_ID }) {
       console.error('Error removing song from playlist:', error);
     }
   };
-  
+
   const handleDeletePlaylist = async (playlistId) => {
     try {
       // Send a request to delete the playlist
@@ -254,7 +256,6 @@ export default function Profile({ USER_ID }) {
               <p>ID: {selectedSong.song_id}</p>
               <p>Name: {selectedSong.name}</p>
               <p>About: {selectedSong.about}</p>
-              
               <audio controls src={audioFile} />
               <h3>Edit Song:</h3>
               <input
@@ -274,51 +275,68 @@ export default function Profile({ USER_ID }) {
           )}
           <h3>Playlists:</h3>
           <ul>
-            {userData.playlists.map((playlist) => (
+          {userData.playlists.map((playlist) => (
               <li key={playlist.id}>
-                <span onClick={() => handleViewPlaylist(playlist.id)}>{playlist.name}</span>
-                {selectedPlaylist && selectedPlaylist.id === playlist.id && (
-                  <ul>
-                    {selectedPlaylist.songs.map((song) => (
-                      <li key={song.id}>
-                        {song.name}
-                        <button onClick={() => handleRemoveSongFromPlaylist(playlist.id, song.song_id)}>
-                          Remove
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                <button onClick={() => handleAddSongToPlaylist(playlist.id)}>Add Song</button>
-                <button onClick={() => handleDeletePlaylist(playlist.id)}>Delete playlist</button>
+                <span>{playlist.name}</span>
+                <button onClick={() => handleViewPlaylist(playlist.id)}>View Playlist</button>
+                <button onClick={() => handleDeletePlaylist(playlist.id)}>Delete Playlist</button>
               </li>
             ))}
           </ul>
-          <div>
-            <h3>Create a New Playlist:</h3>
-            <input
-              type="text"
-              placeholder="Playlist name"
-              value={newPlaylistName}
-              onChange={(e) => setNewPlaylistName(e.target.value)}
-            />
-            <button onClick={handleCreatePlaylist}>Create Playlist</button>
-          </div>
-          <div>
-            <h3>Create a New Song:</h3>
-         <input
-              type="text"
-              placeholder="Song name"
-              value={newSongName}
-              onChange={(e) => setNewSongName(e.target.value)}
-            />
-            <input type="file" accept="audio/*" onChange={handleFileChange} />
-            <button onClick={handleCreateSong}>Create Song</button>
-          </div>
         </div>
       ) : (
         <p>Loading user data...</p>
       )}
+
+      {selectedPlaylist && (
+        <div>
+          <h3>Selected Playlist Details:</h3>
+          <p>ID: {selectedPlaylist.id}</p>
+          <p>Name: {selectedPlaylist.name}</p>
+          <h3>Songs in Playlist:</h3>
+          <ul>
+            {selectedPlaylist.songs.map((song) => (
+              <li key={song.song_id}>
+                <span>{song.name}</span>
+                <button onClick={() => handleRemoveSongFromPlaylist(selectedPlaylist.id, song.song_id)}>Remove Song</button>
+              </li>
+            ))}
+          </ul>
+          <h3>Add Song to Playlist:</h3>
+          <select onChange={(e) => setSongToAdd(e.target.value)}>
+            <option value="">Select a song</option>
+            {userData.songs.map((song) => (
+              <option key={song.id} value={song.id}>
+                {song.name}
+              </option>
+            ))}
+          </select>
+          <button onClick={() => handleAddSongToPlaylist(selectedPlaylist.id)}>Add Song to Playlist</button>
+        </div>
+      )}
+
+      <h3>Create New Song:</h3>
+      <input
+        type="text"
+        placeholder="Song Name"
+        value={newSongName}
+        onChange={(e) => setNewSongName(e.target.value)}
+      />
+      <input type="file" accept="audio/*" onChange={handleFileChange} />
+      {audioUrl && <audio controls src={audioUrl} />}
+      <button onClick={handleCreateSong}>Create Song</button>
+
+      <h3>Create New Playlist:</h3>
+      <input
+        type="text"
+        placeholder="Playlist Name"
+        value={newPlaylistName}
+        onChange={(e) => setNewPlaylistName(e.target.value)}
+      />
+      <button onClick={handleCreatePlaylist}>Create Playlist</button>
     </div>
   );
 }
+
+
+

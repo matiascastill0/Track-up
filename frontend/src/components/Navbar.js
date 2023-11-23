@@ -19,7 +19,7 @@ export default function navbar() {
                     <li className="nav-item">
                         <Link className="nav-link" to="/register">Register</Link>
                     </li>
-                    {/* Puedes agregar más elementos <li> para otros enlaces según sea necesario */}
+                    { /* Add this <li> */}
                 </ul>
             </div>
         </div>
