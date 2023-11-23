@@ -23,8 +23,8 @@ const UserProfile = ({ userId, onLogout }) => {
   return (
     <View style={styles.container}>
       <Text>Email: {userData?.email}</Text>
-      <Text>Songs: {userData?.songs.join(', ')}</Text>
-      <Text>Playlists: {userData?.playlists.join(', ')}</Text>
+      <Text>Songs: {userData?.songs.map(song => song.name).join(', ')}</Text>
+      <Text>Playlists: {userData?.playlists.map(playlist => playlist.name).join(', ')}</Text>
       <Button title="Logout" onPress={onLogout} />
     </View>
   );
